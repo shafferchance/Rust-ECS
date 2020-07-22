@@ -1,0 +1,11 @@
+[package]
+name = "entity"
+version = "0.1.0"
+authors = ["shafferchance <shafferchance@gmail.com>"]
+edition = "2018"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+uuid = { version = "0.8.1", features = ["v4"] }
