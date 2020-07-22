@@ -1,9 +1,8 @@
-[package]
-name = "Rust-ECS"
-version = "0.1.0"
-authors = ["shafferchance <shafferchance@gmail.com>"]
-edition = "2018"
+[workspace]
+members = [
+    "src/entity"
+]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
+exclude = [
+    "build"
+]
