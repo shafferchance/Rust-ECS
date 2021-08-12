@@ -1,4 +1,6 @@
-use ash::vk;
+use std::ffi::CStr;
+use std::os::raw::c_char;
+use std::path::Path;
 
 #[cfg(target_os = "windows")]
 use ash::extensions::khr::Win32Surface;
@@ -35,4 +37,22 @@ pub fn required_extension_names() -> Vec<*const i8> {
         XlibSurface::name().as_ptr(),
         DebugUtils::name().as_ptr(),
     ]
+}
+
+pub struct ValidationInfo {
+    pub is_enable: bool,
+    pub required_validation_layers: [&'static str; 1],
+}
+
+pub fn vk_to_string(raw_string_array: &[c_char]) -> String {
+    // Unsafe is required as we're deferencing to upcast the pointer (my best guess)
+    let raw_string = unsafe {
+        let ptr = raw_string_array.as_ptr();
+        CStr::from_ptr(ptr)
+    };
+
+    raw_string
+        .to_str()
+        .expect("Failed to convert Vulkan raw string")
+        .to_owned()
 }
