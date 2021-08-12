@@ -1,8 +1,8 @@
-[workspace]
-members = [
-    "src/entity"
-]
+[package]
+name = "rust-ecs-test"
+version = "0.1.0"
+edition = "2018"
+authors = ["Chance <shafferchance@gmail.com>"]
 
-exclude = [
-    "build"
-]
+[dependencies]
+winit = "0.25.0"
