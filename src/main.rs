@@ -1,6 +1,7 @@
 mod modules;
 use modules::entity::entity_map;
 use modules::vulkan::base::VulkanApp;
+use modules::vulkan::instance_creation::VulkanApp1;
 use winit::event_loop::EventLoop;
 
 fn main() {
@@ -16,8 +17,14 @@ fn main() {
     entity_3.print();
     entity_4.print();
 
-    let event_loop = EventLoop::new();
-    let _window = VulkanApp::init_window(&event_loop);
+    // Base Example
+    let event_loop = EventLoop::new(); // The same across examples
+    // let _window = VulkanApp::init_window(&event_loop);
 
-    VulkanApp::main_loop(event_loop);
+    // VulkanApp::main_loop(event_loop);
+
+    // Example 1
+    let window = VulkanApp1::init_window(&event_loop);
+    let mut vulkan_app = VulkanApp1::new();
+    vulkan_app.main_loop(event_loop, window);
 }
