@@ -90,7 +90,7 @@ impl VulkanApp4 {
 
         let queue_priorities = [1.0_f32];
         let queue_create_info = vk::DeviceQueueCreateInfo {
-            s_type: vk::StructureType::DEVICE_CREATE_INFO,
+            s_type: vk::StructureType::DEVICE_QUEUE_CREATE_INFO,
             p_next: ptr::null(),
             flags: vk::DeviceQueueCreateFlags::empty(),
             queue_family_index: indices.graphics_family.unwrap(),
