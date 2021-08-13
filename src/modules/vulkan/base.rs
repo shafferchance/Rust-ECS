@@ -1,12 +1,12 @@
 use winit::event::{Event, VirtualKeyCode, ElementState, KeyboardInput, WindowEvent};
 use winit::event_loop::{EventLoop, ControlFlow};
 
+use crate::modules::utility::constant::{ WINDOW_HEIGHT, WINDOW_WIDTH };
+
 /// I swear I will make something original once I learn :( 
 /// https://github.com/unknownue/vulkan-tutorial-rust/blob/master/src/tutorials/00_base_code.rs
 
 const WINDOW_TITLE: &'static str = "00.Base Code";
-const WINDOW_WIDTH: u32 = 800;
-const WINDOW_HEIGHT: u32 = 600;
 
 pub struct VulkanApp;
 

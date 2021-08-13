@@ -1,8 +1,11 @@
 mod modules;
 use modules::entity::entity_map;
+use modules::utility::utility::init_window;
 // use modules::vulkan::base::VulkanApp;
-// use modules::vulkan::instance_creation::VulkanApp1;
+use modules::vulkan::instance_creation::VulkanApp1;
 use modules::vulkan::validation_layers::VulkanApp2;
+use modules::vulkan::physical_device::{ VulkanApp3, WINDOW_TITLE };
+use modules::utility::constant::*;
 use winit::event_loop::EventLoop;
 
 fn main() {
@@ -30,7 +33,12 @@ fn main() {
     // vulkan_app.main_loop(event_loop, window);
 
     // Example 2
-    let window = VulkanApp2::init_window(&event_loop);
-    let vulkan_app = VulkanApp2::new();
+    // let window = VulkanApp2::init_window(&event_loop);
+    // let vulkan_app = VulkanApp2::new();
+    // vulkan_app.main_loop(event_loop, window);
+
+    // Example 3
+    let window = init_window(&event_loop, WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
+    let vulkan_app = VulkanApp3::new();
     vulkan_app.main_loop(event_loop, window);
 }

@@ -6,12 +6,10 @@ use winit::event::{ Event, VirtualKeyCode, ElementState, KeyboardInput, WindowEv
 use winit::event_loop::{ EventLoop, ControlFlow };
 use winit::window::Window;
 
+use crate::modules::utility::constant::{ WINDOW_WIDTH, WINDOW_HEIGHT, API_VERSION, APPLICATION_VERSION, ENGINE_VERSION };
+use crate::modules::utility::utility::required_extension_names;
+
 const WINDOW_TITLE: &'static str = "01.Instance Creation";
-const WINDOW_WIDTH: u32 = 800;
-const WINDOW_HEIGHT: u32 = 600;
-const APPLICATION_VERSION: u32 = vk::make_version(1, 0, 0);
-const ENGINE_VERSION: u32 = vk::make_version(1, 0, 0);
-const API_VERSION: u32 = vk::make_version(1, 0, 92);
 
 pub struct VulkanApp1 {
     _entry: ash::Entry,
@@ -54,7 +52,7 @@ impl VulkanApp1 {
             api_version: API_VERSION
         };
 
-        let extension_names = super::utility::required_extension_names();
+        let extension_names = required_extension_names();
 
         let create_info = vk::InstanceCreateInfo {
             s_type: vk::StructureType::INSTANCE_CREATE_INFO,
