@@ -4,7 +4,10 @@ use modules::utility::utility::init_window;
 // use modules::vulkan::base::VulkanApp;
 use modules::vulkan::instance_creation::VulkanApp1;
 use modules::vulkan::validation_layers::VulkanApp2;
-use modules::vulkan::physical_device::{ VulkanApp3, WINDOW_TITLE };
+// Import WINDOW_TITLE from files
+use modules::vulkan::physical_device::VulkanApp3;
+use modules::vulkan::logical_device::{ VulkanApp4, WINDOW_TITLE };
+
 use modules::utility::constant::*;
 use winit::event_loop::EventLoop;
 
@@ -38,7 +41,12 @@ fn main() {
     // vulkan_app.main_loop(event_loop, window);
 
     // Example 3
+    // let window = init_window(&event_loop, WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
+    // let vulkan_app = VulkanApp3::new();
+    // vulkan_app.main_loop(event_loop, window);
+
+    // Example 4
     let window = init_window(&event_loop, WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
-    let vulkan_app = VulkanApp3::new();
+    let vulkan_app = VulkanApp4::new();
     vulkan_app.main_loop(event_loop, window);
 }
