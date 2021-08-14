@@ -33,7 +33,7 @@ impl QueueFamilyIndices {
 
 struct SurfaceStuff {
     surface_loader: ash::extensions::khr::Surface,
-    surface: vk::SurfaceFormatKHR
+    surface: vk::SurfaceKHR
 }
 
 pub struct VulkanApp5 {
@@ -74,14 +74,15 @@ impl VulkanApp5 {
             surface_loader: surface_stuff.surface_loader,
             debug_messenger,
             debug_utils_loader,
-            device
+            device,
+            instance
         }
     }
 
     fn create_surface(
         entry: &ash::Entry,
         instance: &ash::Instance,
-        window: &winit:window::Window
+        window: &winit::window::Window
     ) -> SurfaceStuff {
         let surface = unsafe {
             utility::create_surface(entry, instance, window)
@@ -103,7 +104,7 @@ impl VulkanApp5 {
             instance
                 .enumerate_physical_devices()
                 .expect("Failed to enumerate Physical Devices!")
-        }
+        };
 
         let result = physical_devices.iter().find(|physical_device| {
             VulkanApp5::is_physical_device_suitable(instance, **physical_device, surface_stuff)
@@ -143,7 +144,8 @@ impl VulkanApp5 {
         let queue_priorities = [1.0_f32];
         let mut queue_create_infos = vec![];
         for &queue_family in unique_queue_families.iter() {
-            let queue_create_info = vk::DEVICE_QUEUE_CREATE_INFO {
+            let queue_create_info = vk::DeviceQueueCreateInfo {
+                s_type: vk::StructureType::DEVICE_QUEUE_CREATE_INFO,
                 p_next: ptr::null(),
                 flags: vk::DeviceQueueCreateFlags::empty(),
                 queue_family_index: queue_family,
@@ -162,7 +164,7 @@ impl VulkanApp5 {
             .iter()
             .map(|layer_name| CString::new(*layer_name).unwrap())
             .collect();
-        let enabled_layer_names: Vec<*const c_char> required_validation_layer_raw_names
+        let enabled_layer_names: Vec<*const c_char> = required_validation_layer_raw_names
             .iter()
             .map(|layer_name| layer_name.as_ptr())
             .collect();
@@ -171,12 +173,13 @@ impl VulkanApp5 {
             s_type: vk::StructureType::DEVICE_CREATE_INFO,
             p_next: ptr::null(),
             flags: vk::DeviceCreateFlags::empty(),
-            queue_create_infos: queue_create_infos.as_ptr(),
+            queue_create_info_count: queue_create_infos.len() as u32,
+            p_queue_create_infos: queue_create_infos.as_ptr(),
             enabled_layer_count: if validation.is_enable {
-                enabled_layer_names.lens()
+                enabled_layer_names.len()
             } else {
                 0
-            } as u32;
+            } as u32,
             pp_enabled_layer_names: if validation.is_enable {
                 enabled_layer_names.as_ptr()
             } else {
@@ -217,7 +220,11 @@ impl VulkanApp5 {
             let is_present_support = unsafe {
                 surface_stuff
                     .surface_loader
-                    .get_physical_device_surface_support(physical_device, index as u32, surface_stuff.surface)
+                    .get_physical_device_surface_support(
+                        physical_device, 
+                        index as u32, 
+                        surface_stuff.surface
+                    ).unwrap()
             };
 
             if queue_family.queue_count > 0 && is_present_support {
