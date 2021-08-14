@@ -3,7 +3,7 @@ use crate::modules::utility::utility::required_extension_names;
 use crate::modules::utility::constant::*;
 
 use std::ffi::CString;
-use std::os::raw::{c_char, c_void};
+use std::os::raw::{c_void};
 use std::ptr;
 
 use ash::vk;
