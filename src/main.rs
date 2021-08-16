@@ -11,6 +11,7 @@ use modules::vulkan::window_surface::{ VulkanApp5, WINDOW_TITLE as WINDOW_TITLE_
 use modules::vulkan::swap_chain_creation::{ VulkanApp6, WINDOW_TITLE as WINDOW_TITLE_6 };
 use modules::vulkan::image_view::{ VulkanApp7, WINDOW_TITLE as WINDOW_TITLE_7 };
 use modules::vulkan::shader_modules::{ VulkanApp9, WINDOW_TITLE as WINDOW_TITLE_9 };
+use modules::vulkan::hello_triangle::VulkanApp15;
 
 use modules::utility::constant::*;
 use winit::event_loop::EventLoop;
@@ -70,7 +71,11 @@ fn main() {
     // vulkan_app.main_loop(event_loop, window);
 
     // Example 9
-    let window = init_window(&event_loop, WINDOW_TITLE_9, WINDOW_WIDTH, WINDOW_HEIGHT);
-    let vulkan_app = VulkanApp9::new(&window);
-    vulkan_app.main_loop(event_loop, window);
+    // let window = init_window(&event_loop, WINDOW_TITLE_9, WINDOW_WIDTH, WINDOW_HEIGHT);
+    // let vulkan_app = VulkanApp9::new(&window);
+    // vulkan_app.main_loop(event_loop, window);
+
+    // Example 15
+    let vulkan_app = VulkanApp15::new(&event_loop);
+    vulkan_app.main_loop(event_loop);
 }
