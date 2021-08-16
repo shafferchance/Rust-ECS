@@ -51,7 +51,7 @@ pub struct VulkanApp5 {
 
 impl VulkanApp5 {
     pub fn new(window: &winit::window::Window) -> VulkanApp5 {
-        let entry = unsafe { ash::Entry::new().unwrap() };
+        let entry = unsafe { ash::Entry::new().expect("Failed to create Entry") };
         let instance = share::create_instance(&entry, WINDOW_TITLE, VALIDATION.is_enable, &VALIDATION.required_validation_layers.to_vec());
         let (debug_utils_loader, debug_messenger) = debug::setup_debug_utils(&entry, &instance);
         let surface_stuff = VulkanApp5::create_surface(&entry, &instance, &window);
@@ -224,7 +224,7 @@ impl VulkanApp5 {
                         physical_device, 
                         index as u32, 
                         surface_stuff.surface
-                    ).unwrap()
+                    ).expect("Failed to get Physical Device")
             };
 
             if queue_family.queue_count > 0 && is_present_support {

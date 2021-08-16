@@ -1,6 +1,8 @@
 use ash::vk;
+use std::os::raw::c_char;
 
 use crate::modules::utility::debug::ValidationInfo;
+use crate::modules::utility::structs::*;
 
 pub const WINDOW_WIDTH: u32 = 800;
 pub const WINDOW_HEIGHT: u32 = 600;
@@ -12,3 +14,15 @@ pub const VALIDATION: ValidationInfo = ValidationInfo {
     is_enable: true,
     required_validation_layers: ["VK_LAYER_KHRONOS_validation"],
 };
+
+pub const DEVICE_EXTENSIONS: DeviceExtension = DeviceExtension {
+    names: ["VK_KHR_swapchain"]
+};
+
+impl DeviceExtension {
+    pub fn get_extensions_raw_names(&self) -> [*const c_char; 1] {
+        [
+            ash::extensions::khr::Swapchain::name().as_ptr()
+        ]
+    }
+}

@@ -5,9 +5,11 @@ use modules::utility::utility::init_window;
 use modules::vulkan::instance_creation::VulkanApp1;
 use modules::vulkan::validation_layers::VulkanApp2;
 // Import WINDOW_TITLE from files
-use modules::vulkan::physical_device::VulkanApp3;
-use modules::vulkan::logical_device::VulkanApp4;
-use modules::vulkan::window_surface::{ VulkanApp5, WINDOW_TITLE };
+use modules::vulkan::physical_device::{ VulkanApp3, WINDOW_TITLE as WINDOW_TITLE_3 };
+use modules::vulkan::logical_device::{ VulkanApp4, WINDOW_TITLE as WINDOW_TITLE_4 };
+use modules::vulkan::window_surface::{ VulkanApp5, WINDOW_TITLE as WINDOW_TITLE_5 };
+use modules::vulkan::swap_chain_creation::{ VulkanApp6, WINDOW_TITLE as WINDOW_TITLE_6 };
+use modules::vulkan::image_view::{ VulkanApp7, WINDOW_TITLE as WINDOW_TITLE_7 };
 
 use modules::utility::constant::*;
 use winit::event_loop::EventLoop;
@@ -42,17 +44,27 @@ fn main() {
     // vulkan_app.main_loop(event_loop, window);
 
     // Example 3
-    // let window = init_window(&event_loop, WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
+    // let window = init_window(&event_loop, WINDOW_TITLE_3, WINDOW_WIDTH, WINDOW_HEIGHT);
     // let vulkan_app = VulkanApp3::new();
     // vulkan_app.main_loop(event_loop, window);
 
     // Example 4
-    // let window = init_window(&event_loop, WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
+    // let window = init_window(&event_loop, WINDOW_TITLE_4, WINDOW_WIDTH, WINDOW_HEIGHT);
     // let vulkan_app = VulkanApp4::new();
     // vulkan_app.main_loop(event_loop, window);
 
     // Example 5
-    let window = init_window(&event_loop, WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
-    let vulkan_app = VulkanApp5::new(&window);
+    // let window = init_window(&event_loop, WINDOW_TITLE_5, WINDOW_WIDTH, WINDOW_HEIGHT);
+    // let vulkan_app = VulkanApp5::new(&window);
+    // vulkan_app.main_loop(event_loop, window);
+
+    // Example 6
+    // let window = init_window(&event_loop, WINDOW_TITLE_6, WINDOW_WIDTH, WINDOW_HEIGHT);
+    // let vulkan_app = VulkanApp6::new(&window);
+    // vulkan_app.main_loop(event_loop, window);
+
+    // Example 7
+    let window = init_window(&event_loop, WINDOW_TITLE_7, WINDOW_WIDTH, WINDOW_HEIGHT);
+    let vulkan_app = VulkanApp7::new(&window);
     vulkan_app.main_loop(event_loop, window);
 }
