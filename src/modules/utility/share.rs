@@ -108,6 +108,7 @@ pub fn create_logical_device(
     instance: &ash::Instance,
     physical_device: vk::PhysicalDevice,
     validation: &debug::ValidationInfo,
+    device_extensions: &DeviceExtension,
     surface_stuff: &SurfaceStuff
 ) -> (ash::Device, QueueFamilyIndices) {
     let indices = find_queue_family(instance, physical_device, surface_stuff);
@@ -144,10 +145,7 @@ pub fn create_logical_device(
         .map(|layer_name| layer_name.as_ptr())
         .collect();
 
-    let enable_extension_names = [
-        // This enables the swapchain extension
-        ash::extensions::khr::Swapchain::name().as_ptr()
-    ];
+    let enable_extension_names = device_extensions.get_extensions_raw_names();
 
     let device_create_info = vk::DeviceCreateInfo {
         s_type: vk::StructureType::DEVICE_CREATE_INFO,
@@ -181,7 +179,8 @@ pub fn create_logical_device(
 
 pub fn pick_physical_device(
     instance: &ash::Instance,
-    surface_stuff: &SurfaceStuff
+    surface_stuff: &SurfaceStuff,
+    required_device_extensions: &DeviceExtension
 ) -> vk::PhysicalDevice {
     let physical_devices = unsafe {
         instance
@@ -193,7 +192,8 @@ pub fn pick_physical_device(
         is_physical_device_suitable(
             instance,
             **physical_device,
-            surface_stuff
+            surface_stuff,
+            required_device_extensions
         )
     });
 
@@ -206,7 +206,8 @@ pub fn pick_physical_device(
 fn is_physical_device_suitable(
     instance: &ash::Instance,
     physical_device: vk::PhysicalDevice,
-    surface_stuff: &SurfaceStuff
+    surface_stuff: &SurfaceStuff,
+    required_device_extensions: &DeviceExtension
 ) -> bool {
     let device_features = unsafe {
         instance.get_physical_device_features(physical_device)
@@ -216,7 +217,7 @@ fn is_physical_device_suitable(
 
     let is_queue_family_supported = indices.is_complete();
     let is_device_extension_supported =
-        check_device_extension_support(instance, physical_device);
+        check_device_extension_support(instance, physical_device, required_device_extensions);
     let is_swapchain_supported = if is_device_extension_supported {
         let swapchain_support = query_swapchain_support(physical_device, surface_stuff);
         !swapchain_support.formats.is_empty() && !swapchain_support.present_modes.is_empty()
@@ -298,7 +299,8 @@ fn find_queue_family(
 
 fn check_device_extension_support(
     instance: &ash::Instance,
-    physical_device: vk::PhysicalDevice
+    physical_device: vk::PhysicalDevice,
+    device_extensions: &DeviceExtension,
 ) -> bool {
     let available_extensions = unsafe {
         instance
@@ -320,7 +322,7 @@ fn check_device_extension_support(
     }
 
     let mut required_extensions = HashSet::new();
-    for extension in DEVICE_EXTENSIONS.names.iter() {
+    for extension in device_extensions.names.iter() {
         required_extensions.insert(extension.to_string());
     }
 
@@ -335,6 +337,7 @@ pub fn create_swapchain(
     instance: &ash::Instance,
     device: &ash::Device,
     physical_device: vk::PhysicalDevice,
+    window: &winit::window::Window,
     surface_stuff: &SurfaceStuff,
     queue_family: &QueueFamilyIndices
 ) -> SwapChainStuff {
@@ -343,7 +346,7 @@ pub fn create_swapchain(
     let surface_format = choose_swapchain_format(&swapchain_support.formats);
     let present_mode =
         choose_swapchain_present_mode(&swapchain_support.present_modes);
-    let extent = choose_swapchain_extent(&swapchain_support.capabilities);
+    let extent = choose_swapchain_extent(&swapchain_support.capabilities, window);
 
     // Basically initializing with the smallest value to take advantage of min function on primitive u32
     let image_count = swapchain_support.capabilities.min_image_count + 1;
@@ -436,21 +439,85 @@ fn choose_swapchain_present_mode(
     vk::PresentModeKHR::FIFO
 }
 
-fn choose_swapchain_extent(capabilities: &vk::SurfaceCapabilitiesKHR) -> vk::Extent2D {
+fn choose_swapchain_extent(
+    capabilities: &vk::SurfaceCapabilitiesKHR, 
+    window: &winit::window::Window
+) -> vk::Extent2D {
     if capabilities.current_extent.width != u32::max_value() {
         capabilities.current_extent
     } else {
+        let window_size = window
+            .inner_size();
         vk::Extent2D {
             width: u32::clamp(
-                WINDOW_WIDTH,
+                window_size.width as u32,
                 capabilities.min_image_extent.width,
                 capabilities.max_image_extent.width,
             ),
             height: u32::clamp(
-                WINDOW_HEIGHT,
+                window_size.height as u32,
                 capabilities.min_image_extent.height,
                 capabilities.max_image_extent.height
             )
         }
     }
 }
+
+pub fn create_image_views(
+    device: &ash::Device,
+    surface_format: vk::Format,
+    images: &Vec<vk::Image>,
+) -> Vec<vk::ImageView> {
+    let swapchain_imageviews: Vec<vk::ImageView> = images
+        .iter()
+        .map(|&image| {
+            create_image_view(
+                device, 
+                image, 
+                surface_format, 
+                vk::ImageAspectFlags::COLOR, 
+                1
+            )
+        })
+        .collect();
+
+    swapchain_imageviews
+}
+
+fn create_image_view(
+    device: &ash::Device,
+    image: vk::Image,
+    format: vk::Format,
+    aspect_flags: vk::ImageAspectFlags,
+    mip_levels: u32,
+) -> vk::ImageView {
+    let imageview_create_info = vk::ImageViewCreateInfo {
+        s_type: vk::StructureType::IMAGE_VIEW_CREATE_INFO,
+        p_next: ptr::null(),
+        flags: vk::ImageViewCreateFlags::empty(),
+        view_type: vk::ImageViewType::TYPE_2D,
+        format,
+        components: vk::ComponentMapping {
+            r: vk::ComponentSwizzle::IDENTITY,
+            g: vk::ComponentSwizzle::IDENTITY,
+            b: vk::ComponentSwizzle::IDENTITY,
+            a: vk::ComponentSwizzle::IDENTITY,
+        },
+        subresource_range: vk::ImageSubresourceRange {
+            aspect_mask: aspect_flags,
+            base_mip_level: 0,
+            level_count: mip_levels,
+            base_array_layer: 0,
+            layer_count: 1,
+        },
+        image,
+    };
+
+    unsafe {
+        device
+            .create_image_view(&imageview_create_info, None)
+            .expect("Failed to create Image View")
+    }
+}
+
+

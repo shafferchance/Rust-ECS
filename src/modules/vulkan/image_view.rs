@@ -56,12 +56,13 @@ impl VulkanApp7 {
         let (debug_utils_loader, debug_messenger) =
             debug::setup_debug_utils(&entry, &instance);
         let physical_device = 
-            share::pick_physical_device(&instance, &surface_stuff);
+            share::pick_physical_device(&instance, &surface_stuff, &DEVICE_EXTENSIONS);
         let (device, family_indices) = 
             share::create_logical_device(
                 &instance, 
                 physical_device, 
-                &VALIDATION, 
+                &VALIDATION,
+                &DEVICE_EXTENSIONS,
                 &surface_stuff
         );
         let graphics_queue = 
@@ -72,7 +73,8 @@ impl VulkanApp7 {
             share::create_swapchain(
                 &instance, 
                 &device, 
-                physical_device, 
+                physical_device,
+                &window,
                 &surface_stuff, 
                 &family_indices
         );
